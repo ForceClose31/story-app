@@ -1,5 +1,6 @@
 package com.example.storyapp.data.api
 
+import com.example.storyapp.data.model.AddStoryResponse
 import com.example.storyapp.data.model.AuthResponse
 import com.example.storyapp.data.model.RegisterResponse
 import com.example.storyapp.data.model.Story
@@ -16,12 +17,16 @@ interface ApiService {
     @POST("register")
     suspend fun register(@Body credentials: Map<String, String>): Response<RegisterResponse>
 
+    @Multipart
     @POST("stories")
     suspend fun addStory(
         @Header("Authorization") token: String,
-        @Part description: RequestBody,
-        @Part photo: MultipartBody.Part
-    ): Response<Story>
+        @Part("description") description: RequestBody,
+        @Part photo: MultipartBody.Part,
+        @Part("lat") lat: RequestBody? = null,
+        @Part("lon") lon: RequestBody? = null
+    ): Response<AddStoryResponse>
+
 
     @GET("stories")
     suspend fun getStories(@Header("Authorization") token: String): Response<StoryResponse>

@@ -1,22 +1,18 @@
 package com.example.storyapp.data.repository
-//
-//import com.example.storyapp.data.api.ApiService
-//import com.example.storyapp.domain.model.StoryDomainModel
-//import com.example.storyapp.domain.repository.StoryRepository
-//
-//class StoryRepositoryImpl(private val apiService: ApiService) : StoryRepository {
-//    override suspend fun getStories(): List<StoryDomainModel> {
-//        val response = apiService.getStories().execute()
-//        if (response.isSuccessful) {
-//            return response.body()?.map {
-//                StoryDomainModel(
-//                    id = it.id,
-//                    name = it.name,
-//                    photoUrl = it.photoUrl,
-//                    description = it.description
-//                )
-//            } ?: emptyList()
-//        }
-//        throw Exception("Failed to fetch stories")
-//    }
-//}
+
+import com.example.storyapp.data.api.ApiService
+import com.example.storyapp.data.model.AddStoryResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Response
+
+class StoryRepository(private val apiService: ApiService) {
+
+    suspend fun addStory(
+        token: String,
+        description: RequestBody,
+        photo: MultipartBody.Part
+    ): Response<AddStoryResponse> {
+        return apiService.addStory(token, description, photo)
+    }
+}

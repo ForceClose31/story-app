@@ -7,6 +7,15 @@ android {
     namespace = "com.example.storyapp"
     compileSdk = 35
 
+    packagingOptions {
+        exclude ("META-INF/LICENSE.md")
+        exclude ("META-INF/LICENSE")
+        exclude ("META-INF/LICENSE.txt")
+        exclude ("META-INF/NOTICE.md")
+        exclude ("META-INF/NOTICE")
+        exclude ("META-INF/NOTICE.txt")
+    }
+
     defaultConfig {
         applicationId = "com.example.storyapp"
         minSdk = 27
@@ -56,6 +65,8 @@ dependencies {
     implementation (libs.androidx.lifecycle.livedata.ktx)
     implementation (libs.material.v190)
     implementation (libs.glide)
+    implementation(libs.androidx.databinding.compiler.common)
+    implementation (libs.okhttp)
 
 
     testImplementation(libs.junit)

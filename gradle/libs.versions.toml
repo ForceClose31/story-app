@@ -14,7 +14,9 @@ activity = "1.8.0"
 constraintlayout = "2.2.0"
 materialVersion = "1.9.0"
 navigationFragmentKtx = "2.8.4"
+okhttp = "4.10.0"
 retrofit = "2.9.0"
+databindingCompilerCommon = "8.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,7 +35,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-databinding-compiler-common = { group = "androidx.databinding", name = "databinding-compiler-common", version.ref = "databindingCompilerCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

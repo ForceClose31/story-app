@@ -41,6 +41,9 @@
         <action
             android:id="@+id/action_homeFragment_to_storyDetailFragment"
             app:destination="@id/storyDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addStoryFragment"
+            app:destination="@id/addStoryFragment" />
     </fragment>
 
     <fragment
@@ -52,4 +55,15 @@
             android:name="story"
             app:argType="com.example.storyapp.data.model.Story" />
     </fragment>
+
+    <fragment
+        android:id="@+id/addStoryFragment"
+        android:name="com.example.storyapp.presentation.story.AddStoryFragment"
+        android:label="Add Story"
+        tools:layout="@layout/fragment_add_story">
+        <action
+            android:id="@+id/action_addStoryFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
 </navigation>

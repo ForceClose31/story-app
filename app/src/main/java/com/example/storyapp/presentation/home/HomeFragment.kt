@@ -26,6 +26,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var storyViewModel: StoryViewModel
+    private lateinit var dataStoreManager: DataStoreManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,37 +40,60 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         storyViewModel = ViewModelProvider(this)[StoryViewModel::class.java]
+        dataStoreManager = DataStoreManager(requireContext())
 
+        // Setup RecyclerView Adapter
         val adapter = StoryAdapter { story -> onStoryClick(story) }
         binding.rvStoryList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvStoryList.adapter = adapter
 
-        val dataStoreManager = DataStoreManager(requireContext())
+        // Get token and load stories
         viewLifecycleOwner.lifecycleScope.launch {
             val token = dataStoreManager.getToken()
 
             if (!token.isNullOrEmpty()) {
                 storyViewModel.getStories("Bearer $token")
             } else {
+                // Navigate to Login screen if no token found
                 findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
             }
         }
 
+        // Observe live data for stories
         storyViewModel.storiesLiveData.observe(viewLifecycleOwner) { stories ->
             if (stories != null) {
                 adapter.submitList(stories)
             }
         }
 
+        // Observe error messages
         storyViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
 
+        // Handle back button press to show exit dialog
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 showExitDialog()
             }
         })
+
+        // Logout button
+        binding.btnLogout.setOnClickListener {
+            logout()
+        }
+
+        // Add Story button
+        binding.btnAddStory.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_addStoryFragment)
+        }
+    }
+
+    private fun logout() {
+        lifecycleScope.launch {
+            dataStoreManager.clearToken()
+            findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
+        }
     }
 
     private fun showExitDialog() {
@@ -86,7 +110,6 @@ class HomeFragment : Fragment() {
 
         dialog.show()
     }
-
 
     private fun onStoryClick(story: Story) {
         val bundle = Bundle().apply {
