@@ -1,18 +1,41 @@
 package com.example.storyapp.data.api
 
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.POST
-
-data class LoginRequest(val email: String, val password: String)
-data class RegisterRequest(val name: String, val email: String, val password: String)
-data class LoginResponse(val token: String, val error: Boolean)
-data class RegisterResponse(val message: String, val error: Boolean)
+import com.example.storyapp.data.model.AuthResponse
+import com.example.storyapp.data.model.RegisterResponse
+import com.example.storyapp.data.model.Story
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.*
 
 interface ApiService {
-    @POST("/login")
-    fun login(@Body request: LoginRequest): Call<LoginResponse>
 
-    @POST("/register")
-    fun register(@Body request: RegisterRequest): Call<RegisterResponse>
+    @FormUrlEncoded
+    @POST("register")
+    suspend fun register(
+        @Field("name") name: String,
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): RegisterResponse
+
+    @FormUrlEncoded
+    @POST("login")
+    suspend fun login(
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): AuthResponse
+
+    @GET("stories")
+    suspend fun getStories(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int? = null,
+        @Query("size") size: Int? = null
+    ): List<Story>
+
+    @Multipart
+    @POST("stories")
+    suspend fun addStory(
+        @Header("Authorization") token: String,
+        @Part photo: MultipartBody.Part,
+        @Part("description") description: RequestBody
+    ): Unit
 }
