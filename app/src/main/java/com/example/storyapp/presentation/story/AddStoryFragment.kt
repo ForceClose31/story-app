@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.storyapp.databinding.FragmentAddStoryBinding
 import com.example.storyapp.utils.DataStoreManager
 import com.example.storyapp.utils.FileUtil
+import com.example.storyapp.utils.compressImage
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -67,6 +68,7 @@ class AddStoryFragment : Fragment() {
 
 
 
+
         binding.buttonAdd.setOnClickListener {
             val description = binding.edAddDescription.text.toString().trim()
             if (description.isEmpty() || photoFile == null) {
@@ -95,6 +97,7 @@ class AddStoryFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -107,15 +110,13 @@ class AddStoryFragment : Fragment() {
                 }
 
                 CAMERA_REQUEST_CODE -> {
+                    photoFile = compressImage(photoFile!!, 1000000)
                     val photoUri = Uri.fromFile(photoFile)
                     binding.ivPreview.setImageURI(photoUri)
                 }
             }
         }
     }
-
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
