@@ -1,5 +1,6 @@
 package com.example.storyapp.presentation.auth
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.transition.TransitionInflater
 import com.example.storyapp.R
 import com.example.storyapp.databinding.FragmentLoginBinding
@@ -29,7 +31,11 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
+        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+
+        val fadeTransition = ObjectAnimator.ofFloat(binding.tvRegister, "alpha", 0f, 1f)
+        fadeTransition.duration = 500
+        fadeTransition.start()
 
         binding.btnLogin.setOnClickListener {
             val email = binding.edLoginEmail.text.toString()
@@ -51,10 +57,16 @@ class LoginFragment : Fragment() {
         })
 
         binding.tvRegister.setOnClickListener {
-            val transition = context?.let { it1 -> TransitionInflater.from(it1).inflateTransition(android.R.transition.move) }
+            val transition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
             sharedElementEnterTransition = transition
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+            sharedElementReturnTransition = transition
 
+            val extras = FragmentNavigatorExtras(
+                binding.edLoginEmail to "emailTransition",
+                binding.edLoginPassword to "passwordTransition",
+                binding.btnLogin to "ButtonTransition"
+            )
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment, null, null, extras)
         }
     }
 

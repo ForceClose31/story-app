@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.storyapp.R
 import com.example.storyapp.databinding.FragmentHomeBinding
@@ -27,11 +28,12 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        authViewModel = ViewModelProvider(requireActivity()).get(AuthViewModel::class.java)
+
         binding.actionLogout.setOnClickListener {
             authViewModel.logout(requireContext())
             findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
         }
-
     }
 
     override fun onDestroyView() {

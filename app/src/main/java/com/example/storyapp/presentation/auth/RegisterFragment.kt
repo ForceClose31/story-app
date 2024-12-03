@@ -1,5 +1,6 @@
 package com.example.storyapp.presentation.auth
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.example.storyapp.R
+import androidx.transition.TransitionInflater
 import com.example.storyapp.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {
@@ -29,6 +29,14 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
+
+        val fadeTransition = ObjectAnimator.ofFloat(binding.edRegisterName, "alpha", 0f, 1f)
+        fadeTransition.duration = 500
+        fadeTransition.start()
+
+        val transition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = transition
+        sharedElementReturnTransition = transition
 
         binding.btnRegister.setOnClickListener {
             val name = binding.edRegisterName.text.toString()
@@ -55,16 +63,6 @@ class RegisterFragment : Fragment() {
                 }
             }
         }
-
-
-        authViewModel.registerResult.observe(viewLifecycleOwner, { result ->
-            if (result != null) {
-                Toast.makeText(requireContext(), "Register Successful", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-            } else {
-                Toast.makeText(requireContext(), "Register Failed", Toast.LENGTH_SHORT).show()
-            }
-        })
     }
 
     override fun onDestroyView() {

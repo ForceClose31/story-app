@@ -9,7 +9,9 @@
         android:id="@+id/ed_login_email"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:hint="Email"
+        android:autofillHints="Email"
+        android:hint="@string/email"
+        android:transitionName="emailTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -18,8 +20,10 @@
         android:id="@+id/ed_login_password"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:hint="Password"
+        android:autofillHints="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
+        android:transitionName="passwordTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ed_login_email" />
@@ -28,7 +32,8 @@
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="@string/login"
+        android:transitionName="ButtonTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ed_login_password" />
@@ -37,9 +42,11 @@
         android:id="@+id/tv_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Don't have an account? Register"
+        android:text="@string/don_t_have_an_account_register_here"
         android:textColor="@android:color/holo_blue_dark"
+        android:transitionName="nameTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_login" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
