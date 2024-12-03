@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -68,6 +70,27 @@ class LoginFragment : Fragment() {
             )
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment, null, null, extras)
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
+    }
+
+    private fun showExitDialog() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setMessage("Apakah Anda yakin ingin keluar dari aplikasi?")
+            .setCancelable(false)
+            .setPositiveButton("Ya") { _, _ ->
+                requireActivity().finishAffinity()
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        dialog.show()
     }
 
     override fun onDestroyView() {
