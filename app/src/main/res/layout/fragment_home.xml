@@ -5,13 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".presentation.home.HomeFragment">
 
-    <Button
-        android:id="@+id/action_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_story_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_story" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.example.storyapp.R
 import com.example.storyapp.utils.DataStoreManager
 import kotlinx.coroutines.launch
 

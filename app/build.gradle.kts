@@ -55,6 +55,7 @@ dependencies {
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation (libs.androidx.lifecycle.livedata.ktx)
     implementation (libs.material.v190)
+    implementation (libs.glide)
 
 
     testImplementation(libs.junit)

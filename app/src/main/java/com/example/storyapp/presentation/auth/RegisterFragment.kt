@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionInflater
@@ -30,7 +31,15 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
+        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+        binding.edRegisterPassword.addTextChangedListener { editable ->
+            val password = editable.toString()
+            if (password.length < 8) {
+                binding.edRegisterPassword.error = "Password harus lebih dari 8 karakter"
+            } else {
+                binding.edRegisterPassword.error = null
+            }
+        }
 
         val fadeTransition = ObjectAnimator.ofFloat(binding.edRegisterName, "alpha", 0f, 1f)
         fadeTransition.duration = 500

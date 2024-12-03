@@ -11,6 +11,7 @@
         android:layout_height="50dp"
         android:autofillHints="Email"
         android:hint="@string/email"
+        android:inputType="textEmailAddress"
         android:transitionName="emailTransition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -3,6 +3,7 @@ package com.example.storyapp.data.api
 import com.example.storyapp.data.model.AuthResponse
 import com.example.storyapp.data.model.RegisterResponse
 import com.example.storyapp.data.model.Story
+import com.example.storyapp.data.model.StoryResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -23,9 +24,5 @@ interface ApiService {
     ): Response<Story>
 
     @GET("stories")
-    suspend fun getStories(
-        @Header("Authorization") token: String,
-        @Query("page") page: Int? = 1,
-        @Query("size") size: Int? = 10
-    ): Response<List<Story>>
+    suspend fun getStories(@Header("Authorization") token: String): Response<StoryResponse>
 }

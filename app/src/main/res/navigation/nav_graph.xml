@@ -33,10 +33,23 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.storyapp.presentation.home.HomeFragment"
-        android:label="Home"
+        android:label="Home Fragment"
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_storyDetailFragment"
+            app:destination="@id/storyDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storyDetailFragment"
+        android:name="com.example.storyapp.presentation.story.StoryDetailFragment"
+        android:label="Story Detail Fragment"
+        tools:layout="@layout/fragment_story_detail">
+        <argument
+            android:name="story"
+            app:argType="com.example.storyapp.data.model.Story" />
     </fragment>
 </navigation>

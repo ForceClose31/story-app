@@ -30,6 +30,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val response = authRepository.login(email, password)
                 _loginResult.postValue(response)
+
+                response.loginResult.token.let { token ->
+                    saveToken(getApplication(), token)
+                }
             } catch (e: Exception) {
                 _loginResult.postValue(null)
             }
