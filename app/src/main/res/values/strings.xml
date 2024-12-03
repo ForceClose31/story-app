@@ -9,4 +9,6 @@
     <string name="login">Login</string>
     <string name="don_t_have_an_account_register_here">Don\'t have an account? Register here.</string>
     <string name="story_description">Story Description</string>
+    <string name="login_failed">Failed to Login</string>
+    <string name="no_data_available">Error data account</string>
 </resources>

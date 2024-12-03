@@ -42,48 +42,40 @@ class HomeFragment : Fragment() {
         storyViewModel = ViewModelProvider(this)[StoryViewModel::class.java]
         dataStoreManager = DataStoreManager(requireContext())
 
-        // Setup RecyclerView Adapter
         val adapter = StoryAdapter { story -> onStoryClick(story) }
         binding.rvStoryList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvStoryList.adapter = adapter
 
-        // Get token and load stories
         viewLifecycleOwner.lifecycleScope.launch {
             val token = dataStoreManager.getToken()
 
             if (!token.isNullOrEmpty()) {
                 storyViewModel.getStories("Bearer $token")
             } else {
-                // Navigate to Login screen if no token found
                 findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
             }
         }
 
-        // Observe live data for stories
         storyViewModel.storiesLiveData.observe(viewLifecycleOwner) { stories ->
             if (stories != null) {
                 adapter.submitList(stories)
             }
         }
 
-        // Observe error messages
         storyViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
 
-        // Handle back button press to show exit dialog
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 showExitDialog()
             }
         })
 
-        // Logout button
         binding.btnLogout.setOnClickListener {
             logout()
         }
 
-        // Add Story button
         binding.btnAddStory.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_addStoryFragment)
         }

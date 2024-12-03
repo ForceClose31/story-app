@@ -22,9 +22,10 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var authViewModel: AuthViewModel
 
+    private var isLoading = false
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
@@ -40,21 +41,41 @@ class LoginFragment : Fragment() {
         fadeTransition.start()
 
         binding.btnLogin.setOnClickListener {
-            val email = binding.edLoginEmail.text.toString()
-            val password = binding.edLoginPassword.text.toString()
+            val email = binding.edLoginEmail.text.toString().trim()
+            val password = binding.edLoginPassword.text.toString().trim()
+
+            if (!isValidEmail(email)) {
+                setError(binding.edLoginEmail, "Format email salah")
+                return@setOnClickListener
+            }
+
+            if (password.isEmpty()) {
+                setError(binding.edLoginPassword, "Password tidak boleh kosong")
+                return@setOnClickListener
+            }
+
+            clearError(binding.edLoginEmail)
+            clearError(binding.edLoginPassword)
+            showLoading()
 
             authViewModel.login(email, password)
         }
 
         authViewModel.loginResult.observe(viewLifecycleOwner, { result ->
-            if (result != null && !result.error) {
-                result.loginResult.token.let { token ->
-                    authViewModel.saveToken(requireContext(), token)
-                }
+            hideLoading()
 
-                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+            if (result != null) {
+                if (!result.error) {
+                    result.loginResult.token.let { token ->
+                        authViewModel.saveToken(requireContext(), token)
+                    }
+                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                } else {
+                    setError(binding.edLoginEmail, null)
+                    setError(binding.edLoginPassword, result.message ?: "Akun salah")
+                }
             } else {
-                Toast.makeText(requireContext(), "Login Failed", Toast.LENGTH_SHORT).show()
+                showNoDataMessage()
             }
         })
 
@@ -76,6 +97,38 @@ class LoginFragment : Fragment() {
                 showExitDialog()
             }
         })
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun setError(view: View, message: String?) {
+        if (view is android.widget.EditText) {
+            view.error = message
+        }
+    }
+
+    private fun clearError(view: View) {
+        if (view is android.widget.EditText) {
+            view.error = null
+        }
+    }
+
+    private fun showLoading() {
+        isLoading = true
+        binding.progressBar.visibility = View.VISIBLE
+        binding.btnLogin.isEnabled = false
+    }
+
+    private fun hideLoading() {
+        isLoading = false
+        binding.progressBar.visibility = View.GONE
+        binding.btnLogin.isEnabled = true
+    }
+
+    private fun showNoDataMessage() {
+        Toast.makeText(requireContext(), "No data available", Toast.LENGTH_SHORT).show()
     }
 
     private fun showExitDialog() {

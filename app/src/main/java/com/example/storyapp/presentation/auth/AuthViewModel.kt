@@ -63,13 +63,4 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    fun logout(context: Context) {
-        val dataStoreManager = DataStoreManager(context)
-        viewModelScope.launch {
-            dataStoreManager.clearToken()
-        }
-    }
-
-
 }
