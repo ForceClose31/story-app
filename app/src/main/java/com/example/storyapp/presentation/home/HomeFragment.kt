@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -28,6 +29,8 @@ class HomeFragment : Fragment() {
     private lateinit var storyViewModel: StoryViewModel
     private lateinit var dataStoreManager: DataStoreManager
 
+    private var isLoading = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,10 +49,19 @@ class HomeFragment : Fragment() {
         binding.rvStoryList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvStoryList.adapter = adapter
 
+        binding.toolbar.findViewById<ImageButton>(R.id.btn_logout).setOnClickListener {
+            logout()
+        }
+
+        binding.toolbar.findViewById<ImageButton>(R.id.btn_add_story).setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_addStoryFragment)
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             val token = dataStoreManager.getToken()
 
             if (!token.isNullOrEmpty()) {
+                showLoading()
                 storyViewModel.getStories("Bearer $token")
             } else {
                 findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
@@ -57,28 +69,42 @@ class HomeFragment : Fragment() {
         }
 
         storyViewModel.storiesLiveData.observe(viewLifecycleOwner) { stories ->
-            if (stories != null) {
+            hideLoading()
+            if (!stories.isNullOrEmpty()) {
                 adapter.submitList(stories)
+            } else {
+                showErrorMessage("Data kosong atau tidak tersedia.")
             }
         }
 
         storyViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            hideLoading()
+            showErrorMessage(message)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                showExitDialog()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showExitDialog()
+                }
             }
-        })
+        )
+    }
 
-        binding.btnLogout.setOnClickListener {
-            logout()
-        }
+    private fun showLoading() {
+        isLoading = true
+        binding.progressBar.visibility = View.VISIBLE
+        binding.rvStoryList.visibility = View.GONE
+    }
 
-        binding.btnAddStory.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_addStoryFragment)
-        }
+    private fun hideLoading() {
+        binding.progressBar.visibility = View.GONE
+        binding.rvStoryList.visibility = View.VISIBLE
+    }
+
+    private fun showErrorMessage(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun logout() {

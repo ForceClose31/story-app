@@ -11,4 +11,6 @@
     <string name="story_description">Story Description</string>
     <string name="login_failed">Failed to Login</string>
     <string name="no_data_available">Error data account</string>
+    <string name="add_story">Add Story</string>
+    <string name="logout">Log Out</string>
 </resources>
