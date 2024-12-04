@@ -17,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import com.example.storyapp.databinding.FragmentAddStoryBinding
 import com.example.storyapp.utils.DataStoreManager
 import com.example.storyapp.utils.FileUtil
-import com.example.storyapp.utils.compressImage
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -66,13 +65,15 @@ class AddStoryFragment : Fragment() {
             }
         }
 
-
-
-
         binding.buttonAdd.setOnClickListener {
             val description = binding.edAddDescription.text.toString().trim()
-            if (description.isEmpty() || photoFile == null) {
-                Toast.makeText(requireContext(), "Fill all fields!", Toast.LENGTH_SHORT).show()
+            if (description.isEmpty()) {
+                Toast.makeText(requireContext(), "Deskripsi tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (photoFile == null || !photoFile!!.exists() || photoFile!!.length() == 0L) {
+                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -88,6 +89,7 @@ class AddStoryFragment : Fragment() {
                 }
             }
         }
+
 
         addStoryViewModel.uploadResult.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
@@ -110,13 +112,22 @@ class AddStoryFragment : Fragment() {
                 }
 
                 CAMERA_REQUEST_CODE -> {
-                    photoFile = compressImage(photoFile!!, 1000000)
-                    val photoUri = Uri.fromFile(photoFile)
-                    binding.ivPreview.setImageURI(photoUri)
+                    if (photoFile != null && photoFile!!.exists() && photoFile!!.length() > 0) {
+                        photoFile = FileUtil.compressImage(photoFile!!, 1000000)
+                        val photoUri = Uri.fromFile(photoFile)
+                        binding.ivPreview.setImageURI(photoUri)
+                    } else {
+                        Toast.makeText(requireContext(), "Gagal mengambil foto. Coba lagi.", Toast.LENGTH_SHORT).show()
+                        photoFile = null
+                    }
                 }
             }
+        } else if (requestCode == CAMERA_REQUEST_CODE) {
+            photoFile = null
+            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

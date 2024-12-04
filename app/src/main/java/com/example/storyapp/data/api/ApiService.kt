@@ -3,7 +3,6 @@ package com.example.storyapp.data.api
 import com.example.storyapp.data.model.AddStoryResponse
 import com.example.storyapp.data.model.AuthResponse
 import com.example.storyapp.data.model.RegisterResponse
-import com.example.storyapp.data.model.Story
 import com.example.storyapp.data.model.StoryResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

@@ -17,7 +17,7 @@ class StoryDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentStoryDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -26,11 +26,50 @@ class StoryDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val story = arguments?.getParcelable<Story>("story")
-        story?.let {
-            binding.tvDetailName.text = it.name
-            binding.tvDetailDescription.text = it.description
-            Glide.with(binding.ivDetailPhoto.context).load(it.photoUrl).into(binding.ivDetailPhoto)
+
+        if (story == null) {
+            showError("Data tidak tersedia.")
+        } else {
+            loadStoryDetails(story)
         }
+    }
+
+    private fun loadStoryDetails(story: Story) {
+        showLoading()
+
+        try {
+            binding.tvDetailName.text = story.name
+            binding.tvDetailDescription.text = story.description
+            Glide.with(binding.ivDetailPhoto.context).load(story.photoUrl).into(binding.ivDetailPhoto)
+
+            hideLoading()
+        } catch (e: Exception) {
+            showError("Gagal memuat data: ${e.message}")
+        }
+    }
+
+    private fun showLoading() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.tvErrorMessage.visibility = View.GONE
+        binding.ivDetailPhoto.visibility = View.GONE
+        binding.tvDetailName.visibility = View.GONE
+        binding.tvDetailDescription.visibility = View.GONE
+    }
+
+    private fun hideLoading() {
+        binding.progressBar.visibility = View.GONE
+        binding.ivDetailPhoto.visibility = View.VISIBLE
+        binding.tvDetailName.visibility = View.VISIBLE
+        binding.tvDetailDescription.visibility = View.VISIBLE
+    }
+
+    private fun showError(message: String) {
+        binding.progressBar.visibility = View.GONE
+        binding.tvErrorMessage.text = message
+        binding.tvErrorMessage.visibility = View.VISIBLE
+        binding.ivDetailPhoto.visibility = View.GONE
+        binding.tvDetailName.visibility = View.GONE
+        binding.tvDetailDescription.visibility = View.GONE
     }
 
     override fun onDestroyView() {

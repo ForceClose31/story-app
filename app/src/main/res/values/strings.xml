@@ -13,4 +13,9 @@
     <string name="no_data_available">Error data account</string>
     <string name="add_story">Add Story</string>
     <string name="logout">Log Out</string>
+    <string name="photo">Photo</string>
+    <string name="from_gallery">From Gallery</string>
+    <string name="from_camera">From Camera</string>
+    <string name="description">Description</string>
+    <string name="upload_story">Upload Story</string>
 </resources>

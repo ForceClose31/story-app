@@ -9,11 +9,13 @@
         android:id="@+id/iv_preview"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:contentDescription="@string/photo"
         android:scaleType="centerCrop"
         android:layout_marginBottom="16dp"
         android:background="@android:color/darker_gray" />
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -21,31 +23,34 @@
 
         <Button
             android:id="@+id/btn_select_photo_gallery"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="From Gallery"
+            android:text="@string/from_gallery"
             android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btn_select_photo_camera"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="From Camera" />
+            android:text="@string/from_camera" />
     </LinearLayout>
 
     <EditText
         android:id="@+id/ed_add_description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Description"
+        android:layout_height="50dp"
+        android:autofillHints="Description"
+        android:hint="@string/description"
         android:layout_marginTop="16dp"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:gravity="center" />
 
     <Button
         android:id="@+id/button_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload Story"
+        android:text="@string/upload_story"
         android:layout_marginTop="16dp" />
 </LinearLayout>
