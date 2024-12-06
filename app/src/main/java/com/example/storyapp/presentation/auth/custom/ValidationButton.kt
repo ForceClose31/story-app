@@ -5,7 +5,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContextCompat
 import com.example.storyapp.R
 
 class ValidationButton @JvmOverloads constructor(

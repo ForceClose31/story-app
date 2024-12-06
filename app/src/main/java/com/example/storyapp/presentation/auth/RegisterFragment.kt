@@ -9,8 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionInflater
-import com.example.storyapp.presentation.auth.custom.ValidationButton
-import com.example.storyapp.presentation.auth.custom.ValidationEditText
 import com.example.storyapp.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {

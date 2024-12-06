@@ -68,21 +68,28 @@ class AddStoryFragment : Fragment() {
         binding.buttonAdd.setOnClickListener {
             val description = binding.edAddDescription.text.toString().trim()
             if (description.isEmpty()) {
-                Toast.makeText(requireContext(), "Deskripsi tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Deskripsi tidak boleh kosong!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
             if (photoFile == null || !photoFile!!.exists() || photoFile!!.length() == 0L) {
-                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
             val dataStoreManager = DataStoreManager(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 val token = dataStoreManager.getToken()
-                val requestBodyDescription = RequestBody.create("text/plain".toMediaTypeOrNull(), description)
+                val requestBodyDescription =
+                    RequestBody.create("text/plain".toMediaTypeOrNull(), description)
                 val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), photoFile!!)
-                val photoPart = MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
+                val photoPart =
+                    MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
 
                 if (token != null) {
                     addStoryViewModel.addStory(token, requestBodyDescription, photoPart)
@@ -117,14 +124,19 @@ class AddStoryFragment : Fragment() {
                         val photoUri = Uri.fromFile(photoFile)
                         binding.ivPreview.setImageURI(photoUri)
                     } else {
-                        Toast.makeText(requireContext(), "Gagal mengambil foto. Coba lagi.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Gagal mengambil foto. Coba lagi.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         photoFile = null
                     }
                 }
             }
         } else if (requestCode == CAMERA_REQUEST_CODE) {
             photoFile = null
-            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
