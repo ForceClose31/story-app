@@ -40,6 +40,8 @@ class LoginFragment : Fragment() {
         fadeTransition.duration = 500
         fadeTransition.start()
 
+        binding.btnLogin.monitorFields(binding.edLoginEmail, binding.edLoginPassword)
+
         binding.btnLogin.setOnClickListener {
             val email = binding.edLoginEmail.text.toString().trim()
             val password = binding.edLoginPassword.text.toString().trim()
@@ -72,7 +74,7 @@ class LoginFragment : Fragment() {
                     findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                 } else {
                     setError(binding.edLoginEmail, null)
-                    setError(binding.edLoginPassword, result.message ?: "Akun salah")
+                    setError(binding.edLoginPassword, result.message)
                 }
             } else {
                 showNoDataMessage()
@@ -128,7 +130,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun showNoDataMessage() {
-        Toast.makeText(requireContext(), "No data available", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Password atau email anda salah", Toast.LENGTH_SHORT).show()
     }
 
     private fun showExitDialog() {

@@ -32,10 +32,10 @@ class RegisterFragment : Fragment() {
 
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
 
-        val nameField = binding.edRegisterName as ValidationEditText
-        val emailField = binding.edRegisterEmail as ValidationEditText
-        val passwordField = binding.edRegisterPassword as ValidationEditText
-        val registerButton = binding.btnRegister as ValidationButton
+        val nameField = binding.edRegisterName
+        val emailField = binding.edRegisterEmail
+        val passwordField = binding.edRegisterPassword
+        val registerButton = binding.btnRegister
 
         registerButton.monitorFields(nameField, emailField, passwordField)
 
@@ -88,7 +88,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun showNoDataMessage() {
-        Toast.makeText(requireContext(), "Data tidak tersedia", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Email telah terpakai", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

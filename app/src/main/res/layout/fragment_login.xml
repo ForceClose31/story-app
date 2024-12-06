@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".presentation.auth.LoginFragment">
 
-    <EditText
+    <com.example.storyapp.presentation.auth.custom.ValidationEditText
         android:id="@+id/ed_login_email"
         android:layout_width="290dp"
         android:layout_height="50dp"
@@ -24,7 +24,7 @@
         android:background="@drawable/edittext_border"
         android:drawableStart="@drawable/ic_menu_mail" />
 
-    <EditText
+    <com.example.storyapp.presentation.auth.custom.ValidationEditText
         android:id="@+id/ed_login_password"
         android:layout_width="290dp"
         android:layout_height="50dp"
@@ -43,7 +43,7 @@
         android:background="@drawable/edittext_border"
         android:drawableStart="@drawable/ic_menu_lock" />
 
-    <Button
+    <com.example.storyapp.presentation.auth.custom.ValidationButton
         android:id="@+id/btn_login"
         android:layout_width="200dp"
         android:layout_height="50dp"
