@@ -6,10 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionInflater
+import com.example.storyapp.presentation.auth.custom.ValidationButton
+import com.example.storyapp.presentation.auth.custom.ValidationEditText
 import com.example.storyapp.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {
@@ -17,8 +18,6 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
     private lateinit var authViewModel: AuthViewModel
-
-    private var isLoading = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,37 +31,27 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
-        binding.edRegisterPassword.addTextChangedListener { editable ->
-            val password = editable.toString()
-            if (password.length < 8) {
-                binding.edRegisterPassword.error = "Password harus lebih dari 8 karakter"
-            } else {
-                binding.edRegisterPassword.error = null
-            }
-        }
 
-        val fadeTransition = ObjectAnimator.ofFloat(binding.edRegisterName, "alpha", 0f, 1f)
+        val nameField = binding.edRegisterName as ValidationEditText
+        val emailField = binding.edRegisterEmail as ValidationEditText
+        val passwordField = binding.edRegisterPassword as ValidationEditText
+        val registerButton = binding.btnRegister as ValidationButton
+
+        registerButton.monitorFields(nameField, emailField, passwordField)
+
+        val fadeTransition = ObjectAnimator.ofFloat(nameField, "alpha", 0f, 1f)
         fadeTransition.duration = 500
         fadeTransition.start()
 
-        val transition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+        val transition = TransitionInflater.from(requireContext())
+            .inflateTransition(android.R.transition.move)
         sharedElementEnterTransition = transition
         sharedElementReturnTransition = transition
 
-        binding.btnRegister.setOnClickListener {
-            val name = binding.edRegisterName.text.toString()
-            val email = binding.edRegisterEmail.text.toString()
-            val password = binding.edRegisterPassword.text.toString()
-
-            if (name.isBlank() || email.isBlank() || password.isBlank()) {
-                Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (password.length < 8) {
-                binding.edRegisterPassword.error = "Password must be at least 8 characters"
-                return@setOnClickListener
-            }
+        registerButton.setOnClickListener {
+            val name = nameField.text.toString()
+            val email = emailField.text.toString()
+            val password = passwordField.text.toString()
 
             showLoading()
 
@@ -85,13 +74,11 @@ class RegisterFragment : Fragment() {
     }
 
     private fun showLoading() {
-        isLoading = true
         binding.progressBar.visibility = View.VISIBLE
         binding.btnRegister.isEnabled = false
     }
 
     private fun hideLoading() {
-        isLoading = false
         binding.progressBar.visibility = View.GONE
         binding.btnRegister.isEnabled = true
     }
