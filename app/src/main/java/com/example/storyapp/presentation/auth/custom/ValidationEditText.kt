@@ -58,8 +58,10 @@ class ValidationEditText @JvmOverloads constructor(
                 }
             }
             PASSWORD -> {
-                if (input.length < 7) {
-                    error = "Password harus lebih dari 8 karakter"
+                if (input.length < 8) {
+                    error = "Password harus memiliki minimal 8 karakter"
+                } else {
+                    error = null
                 }
             }
         }

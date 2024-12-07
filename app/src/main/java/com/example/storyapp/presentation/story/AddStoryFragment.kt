@@ -3,7 +3,9 @@ package com.example.storyapp.presentation.story
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -14,6 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.storyapp.databinding.FragmentAddStoryBinding
 import com.example.storyapp.utils.DataStoreManager
 import com.example.storyapp.utils.FileUtil
@@ -45,58 +48,49 @@ class AddStoryFragment : Fragment() {
         addStoryViewModel = ViewModelProvider(this)[AddStoryViewModel::class.java]
 
         binding.btnSelectPhotoGallery.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, GALLERY_REQUEST_CODE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (checkAndRequestGalleryPermission()) {
+                    openGallery()
+                }
+            } else {
+                openGallery()
+            }
         }
 
         binding.btnSelectPhotoCamera.setOnClickListener {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (intent.resolveActivity(requireContext().packageManager) != null) {
-                photoFile = FileUtil.createImageFile(requireContext())
-
-                val photoUri: Uri = FileProvider.getUriForFile(
-                    requireContext(),
-                    "${requireContext().packageName}.provider",
-                    photoFile!!
-                )
-
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (checkAndRequestCameraPermission()) {
+                    openCamera()
+                }
+            } else {
+                openCamera()
             }
         }
 
         binding.buttonAdd.setOnClickListener {
             val description = binding.edAddDescription.text.toString().trim()
             if (description.isEmpty()) {
-                Toast.makeText(
-                    requireContext(),
-                    "Deskripsi tidak boleh kosong!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Deskripsi tidak boleh kosong!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (photoFile == null || !photoFile!!.exists() || photoFile!!.length() == 0L) {
-                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val dataStoreManager = DataStoreManager(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 val token = dataStoreManager.getToken()
-                val requestBodyDescription =
-                    RequestBody.create("text/plain".toMediaTypeOrNull(), description)
+                val requestBodyDescription = RequestBody.create("text/plain".toMediaTypeOrNull(), description)
                 val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), photoFile!!)
-                val photoPart =
-                    MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
+                val photoPart = MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
 
                 if (token != null) {
                     addStoryViewModel.addStory(token, requestBodyDescription, photoPart)
                 }
             }
         }
-
 
         addStoryViewModel.uploadResult.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
@@ -115,31 +109,74 @@ class AddStoryFragment : Fragment() {
                     val selectedImage: Uri = data?.data ?: return
                     val file = FileUtil.getFile(requireContext(), selectedImage)
                     photoFile = file
-                    binding.ivPreview.setImageURI(selectedImage)
+                    Glide.with(this)
+                        .load(selectedImage)
+                        .into(binding.ivPreview)
                 }
 
                 CAMERA_REQUEST_CODE -> {
                     if (photoFile != null && photoFile!!.exists() && photoFile!!.length() > 0) {
                         photoFile = FileUtil.compressImage(photoFile!!, 1000000)
                         val photoUri = Uri.fromFile(photoFile)
-                        binding.ivPreview.setImageURI(photoUri)
+                        Glide.with(this)
+                            .load(photoUri)
+                            .into(binding.ivPreview)
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Gagal mengambil foto. Coba lagi.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "Gagal mengambil foto. Coba lagi.", Toast.LENGTH_SHORT).show()
                         photoFile = null
                     }
                 }
             }
         } else if (requestCode == CAMERA_REQUEST_CODE) {
             photoFile = null
-            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT).show()
         }
     }
 
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            photoFile = FileUtil.createImageFile(requireContext())
+            val photoUri: Uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.provider",
+                photoFile!!
+            )
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+            startActivityForResult(intent, CAMERA_REQUEST_CODE)
+        }
+    }
+
+    private fun checkAndRequestCameraPermission(): Boolean {
+        val permissionsNeeded = mutableListOf<String>()
+        if (requireContext().checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(android.Manifest.permission.CAMERA)
+        }
+        if (permissionsNeeded.isNotEmpty()) {
+            requestPermissions(permissionsNeeded.toTypedArray(), CAMERA_PERMISSION_REQUEST_CODE)
+            return false
+        }
+        return true
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun checkAndRequestGalleryPermission(): Boolean {
+        val permissionsNeeded = mutableListOf<String>()
+        if (requireContext().checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(android.Manifest.permission.READ_MEDIA_IMAGES)
+        }
+        if (permissionsNeeded.isNotEmpty()) {
+            requestPermissions(permissionsNeeded.toTypedArray(), GALLERY_PERMISSION_REQUEST_CODE)
+            return false
+        }
+        return true
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -149,5 +186,7 @@ class AddStoryFragment : Fragment() {
     companion object {
         private const val GALLERY_REQUEST_CODE = 100
         private const val CAMERA_REQUEST_CODE = 101
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 102
+        private const val GALLERY_PERMISSION_REQUEST_CODE = 103
     }
 }
