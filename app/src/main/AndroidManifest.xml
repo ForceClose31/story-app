@@ -24,6 +24,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StoryApp"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCKNGwJVqoZ-PWff3z47WjAnjW1QBy_4ss" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.databinding.compiler.common)
     implementation (libs.okhttp)
 
+    implementation (libs.play.services.maps)
+    implementation (libs.play.services.location)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -56,6 +56,10 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment_to_addStoryFragment)
         }
 
+        binding.toolbar.findViewById<ImageButton>(R.id.btn_map).setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_mapFragment)
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             val token = dataStoreManager.getToken()
 

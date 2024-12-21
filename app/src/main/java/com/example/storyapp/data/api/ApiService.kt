@@ -6,6 +6,7 @@ import com.example.storyapp.data.model.RegisterResponse
 import com.example.storyapp.data.model.StoryResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -26,7 +27,9 @@ interface ApiService {
         @Part("lon") lon: RequestBody? = null
     ): Response<AddStoryResponse>
 
-
     @GET("stories")
     suspend fun getStories(@Header("Authorization") token: String): Response<StoryResponse>
+
+    @GET("stories?location=1")
+    fun getStoriesWithLocation(@Header("Authorization") token: String): Call<StoryResponse>
 }

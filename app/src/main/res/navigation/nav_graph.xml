@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addStoryFragment"
             app:destination="@id/addStoryFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment
@@ -54,6 +57,16 @@
         <argument
             android:name="story"
             app:argType="com.example.storyapp.data.model.Story" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.storyapp.presentation.map.MapFragment"
+        android:label="Add Story"
+        tools:layout="@layout/fragment_map">
+        <action
+            android:id="@+id/action_mapFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 
     <fragment
