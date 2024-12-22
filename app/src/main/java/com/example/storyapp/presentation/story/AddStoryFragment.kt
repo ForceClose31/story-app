@@ -22,8 +22,8 @@ import com.bumptech.glide.Glide
 import com.example.storyapp.databinding.FragmentAddStoryBinding
 import com.example.storyapp.utils.DataStoreManager
 import com.example.storyapp.utils.FileUtil
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -88,24 +88,33 @@ class AddStoryFragment : Fragment() {
         binding.buttonAdd.setOnClickListener {
             val description = binding.edAddDescription.text.toString().trim()
             if (description.isEmpty()) {
-                Toast.makeText(requireContext(), "Deskripsi tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Deskripsi tidak boleh kosong!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
             if (photoFile == null || !photoFile!!.exists() || photoFile!!.length() == 0L) {
-                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Foto tidak boleh kosong!", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
             val dataStoreManager = DataStoreManager(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 val token = dataStoreManager.getToken()
-                val requestBodyDescription = RequestBody.create("text/plain".toMediaTypeOrNull(), description)
+                val requestBodyDescription =
+                    RequestBody.create("text/plain".toMediaTypeOrNull(), description)
                 val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), photoFile!!)
-                val photoPart = MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
+                val photoPart =
+                    MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
 
-                val lat = userLatitude?.toString()?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
-                val lon = userLongitude?.toString()?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
+                val lat = userLatitude?.toString()
+                    ?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
+                val lon = userLongitude?.toString()
+                    ?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
 
                 if (token != null) {
                     addStoryViewModel.addStory(token, requestBodyDescription, photoPart, lat, lon)
@@ -123,10 +132,19 @@ class AddStoryFragment : Fragment() {
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
             return
         }
 
@@ -165,14 +183,19 @@ class AddStoryFragment : Fragment() {
                             .load(photoUri)
                             .into(binding.ivPreview)
                     } else {
-                        Toast.makeText(requireContext(), "Gagal mengambil foto. Coba lagi.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Gagal mengambil foto. Coba lagi.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         photoFile = null
                     }
                 }
             }
         } else if (requestCode == CAMERA_REQUEST_CODE) {
             photoFile = null
-            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 

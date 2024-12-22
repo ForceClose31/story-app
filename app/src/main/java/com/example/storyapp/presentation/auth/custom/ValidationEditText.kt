@@ -52,11 +52,13 @@ class ValidationEditText @JvmOverloads constructor(
                     error = "Nama hanya boleh mengandung huruf"
                 }
             }
+
             EMAIL -> {
                 if (!android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
                     error = "Format email tidak valid"
                 }
             }
+
             PASSWORD -> {
                 if (input.length < 8) {
                     error = "Password harus memiliki minimal 8 karakter"

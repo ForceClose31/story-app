@@ -1,15 +1,17 @@
 package com.example.storyapp.story
 
-import  com.example.storyapp.utils.collectDataUsingDiffer
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.fake.FakeStoryRepository
+import com.example.storyapp.presentation.story.StoryViewModel
 import com.example.storyapp.utils.MainDispatcherRule
+import com.example.storyapp.utils.collectDataUsingDiffer
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -18,8 +20,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import com.example.storyapp.presentation.story.StoryViewModel
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewModelTest {

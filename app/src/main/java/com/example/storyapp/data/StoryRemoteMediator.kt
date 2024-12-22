@@ -1,11 +1,14 @@
 package com.example.storyapp.data
 
-import androidx.paging.*
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.storyapp.data.api.ApiService
 import com.example.storyapp.data.local.StoryDatabase
-import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.data.local.entity.RemoteKeys
+import com.example.storyapp.data.local.entity.StoryEntity
 
 @OptIn(ExperimentalPagingApi::class)
 class StoryRemoteMediator(
@@ -49,7 +52,10 @@ class StoryRemoteMediator(
                     database.storyDao().clearStories()
                 }
                 val keys = stories.map {
-                    RemoteKeys(storyId = it.id, nextKey = if (endOfPaginationReached) null else page + 1)
+                    RemoteKeys(
+                        storyId = it.id,
+                        nextKey = if (endOfPaginationReached) null else page + 1
+                    )
                 }
                 database.remoteKeysDao().insertAll(keys)
                 database.storyDao().insertStories(stories)

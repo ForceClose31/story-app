@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.storyapp.data.api.ApiService
 import com.example.storyapp.data.model.Story
 import com.example.storyapp.data.model.StoryResponse
-import com.example.storyapp.data.api.ApiService
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,11 +24,15 @@ class MapViewModel(private val apiService: ApiService) : ViewModel() {
     fun fetchStoriesWithLocation(token: String) {
         viewModelScope.launch {
             apiService.getStoriesWithLocation(token).enqueue(object : Callback<StoryResponse> {
-                override fun onResponse(call: Call<StoryResponse>, response: Response<StoryResponse>) {
+                override fun onResponse(
+                    call: Call<StoryResponse>,
+                    response: Response<StoryResponse>
+                ) {
                     if (response.isSuccessful && response.body() != null) {
                         val storyResponse = response.body()
                         if (storyResponse?.error == false) {
-                            _stories.value = storyResponse.listStory.filter { it.lat != null && it.lon != null }
+                            _stories.value =
+                                storyResponse.listStory.filter { it.lat != null && it.lon != null }
                         } else {
                             _error.value = storyResponse?.message ?: "Terjadi kesalahan."
                         }

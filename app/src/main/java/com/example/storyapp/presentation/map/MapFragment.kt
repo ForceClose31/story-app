@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.storyapp.R
 import com.example.storyapp.data.api.RetrofitClient
 import com.example.storyapp.data.model.Story
@@ -19,9 +20,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -50,7 +50,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             Log.d("Token", "Token yang digunakan: $token")
 
             if (token.isNullOrEmpty()) {
-                Toast.makeText(requireContext(), "Token tidak ditemukan. Silakan login terlebih dahulu.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Token tidak ditemukan. Silakan login terlebih dahulu.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@launch
             }
 

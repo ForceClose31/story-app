@@ -40,7 +40,8 @@ class StoryDetailFragment : Fragment() {
         try {
             binding.tvDetailName.text = story.name
             binding.tvDetailDescription.text = story.description
-            Glide.with(binding.ivDetailPhoto.context).load(story.photoUrl).into(binding.ivDetailPhoto)
+            Glide.with(binding.ivDetailPhoto.context).load(story.photoUrl)
+                .into(binding.ivDetailPhoto)
 
             hideLoading()
         } catch (e: Exception) {

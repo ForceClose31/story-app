@@ -1,4 +1,5 @@
 package com.example.storyapp.utils
+
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.DiffUtil
@@ -18,8 +19,11 @@ suspend fun collectDataUsingDiffer(pagingData: PagingData<StoryEntity>): List<St
 }
 
 class StoryEntityDiffCallback : DiffUtil.ItemCallback<StoryEntity>() {
-    override fun areItemsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean = oldItem.id == newItem.id
-    override fun areContentsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean = oldItem == newItem
+    override fun areItemsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean =
+        oldItem.id == newItem.id
+
+    override fun areContentsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean =
+        oldItem == newItem
 }
 
 class NoopListUpdateCallback : ListUpdateCallback {

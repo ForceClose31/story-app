@@ -1,30 +1,30 @@
 package com.example.storyapp.presentation.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.R
+import com.example.storyapp.data.api.RetrofitClient
+import com.example.storyapp.data.local.StoryDatabase
+import com.example.storyapp.data.local.entity.StoryEntity
+import com.example.storyapp.data.repository.StoryRepository
 import com.example.storyapp.databinding.FragmentHomeBinding
 import com.example.storyapp.presentation.story.StoryAdapter
 import com.example.storyapp.presentation.story.StoryViewModel
-import com.example.storyapp.utils.DataStoreManager
-import com.example.storyapp.data.repository.StoryRepository
-import kotlinx.coroutines.launch
-import com.example.storyapp.data.local.entity.StoryEntity
-import com.example.storyapp.data.local.StoryDatabase
-import android.util.Log
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
-import com.example.storyapp.data.api.RetrofitClient
 import com.example.storyapp.presentation.story.StoryViewModelFactory
+import com.example.storyapp.utils.DataStoreManager
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
     private fun getStoryViewModel(token: String): StoryViewModel {
         val database = StoryDatabase.getDatabase(requireContext())
         val apiService = RetrofitClient.instance
-        val repository = StoryRepository(database, apiService,  "Bearer $token")
+        val repository = StoryRepository(database, apiService, "Bearer $token")
         val factory = StoryViewModelFactory(requireActivity().application, repository)
         return ViewModelProvider(this, factory).get(StoryViewModel::class.java)
     }
@@ -92,11 +92,13 @@ class HomeFragment : Fragment() {
             showErrorMessage(message)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                showExitDialog()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showExitDialog()
+                }
+            })
     }
 
     private fun showLoading() {

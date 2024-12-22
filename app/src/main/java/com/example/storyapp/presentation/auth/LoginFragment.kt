@@ -10,8 +10,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.example.storyapp.R
 import com.example.storyapp.databinding.FragmentLoginBinding
@@ -82,7 +82,8 @@ class LoginFragment : Fragment() {
         })
 
         binding.tvRegister.setOnClickListener {
-            val transition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
+            val transition = TransitionInflater.from(requireContext())
+                .inflateTransition(android.R.transition.move)
             sharedElementEnterTransition = transition
             sharedElementReturnTransition = transition
 
@@ -91,14 +92,21 @@ class LoginFragment : Fragment() {
                 binding.edLoginPassword to "passwordTransition",
                 binding.btnLogin to "ButtonTransition"
             )
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment, null, null, extras)
+            findNavController().navigate(
+                R.id.action_loginFragment_to_registerFragment,
+                null,
+                null,
+                extras
+            )
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                showExitDialog()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showExitDialog()
+                }
+            })
     }
 
     private fun isValidEmail(email: String): Boolean {
@@ -130,7 +138,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun showNoDataMessage() {
-        Toast.makeText(requireContext(), "Password atau email anda salah", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Password atau email anda salah", Toast.LENGTH_SHORT)
+            .show()
     }
 
     private fun showExitDialog() {

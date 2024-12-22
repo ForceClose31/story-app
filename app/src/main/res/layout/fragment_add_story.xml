@@ -2,33 +2,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center_horizontal"
+    android:orientation="vertical"
     android:padding="16dp">
 
     <ImageView
         android:id="@+id/iv_preview"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:contentDescription="@string/photo"
-        android:scaleType="centerCrop"
         android:layout_marginBottom="16dp"
-        android:background="@android:color/darker_gray" />
+        android:background="@android:color/darker_gray"
+        android:contentDescription="@string/photo"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_select_photo_gallery"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/from_gallery"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:text="@string/from_gallery" />
 
         <Button
             android:id="@+id/btn_select_photo_camera"
@@ -42,11 +42,11 @@
         android:id="@+id/ed_add_description"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:autofillHints="Description"
-        android:hint="@string/description"
         android:layout_marginTop="16dp"
-        android:inputType="textMultiLine"
-        android:gravity="center" />
+        android:autofillHints="Description"
+        android:gravity="center"
+        android:hint="@string/description"
+        android:inputType="textMultiLine" />
 
     <Switch
         android:id="@+id/switch_use_location"
@@ -59,14 +59,14 @@
         android:id="@+id/tv_location_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="@string/lokasi_tidak_ada" />
+        android:text="@string/lokasi_tidak_ada"
+        android:visibility="gone" />
 
 
     <Button
         android:id="@+id/button_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/upload_story"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="@string/upload_story" />
 </LinearLayout>
