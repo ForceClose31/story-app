@@ -1,5 +1,6 @@
 package com.example.storyapp.presentation.story
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -12,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +22,8 @@ import com.bumptech.glide.Glide
 import com.example.storyapp.databinding.FragmentAddStoryBinding
 import com.example.storyapp.utils.DataStoreManager
 import com.example.storyapp.utils.FileUtil
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -31,7 +35,10 @@ class AddStoryFragment : Fragment() {
     private var _binding: FragmentAddStoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var addStoryViewModel: AddStoryViewModel
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var photoFile: File? = null
+    private var userLatitude: Double? = null
+    private var userLongitude: Double? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +53,17 @@ class AddStoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         addStoryViewModel = ViewModelProvider(this)[AddStoryViewModel::class.java]
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        binding.switchUseLocation.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                getLocation()
+            } else {
+                userLatitude = null
+                userLongitude = null
+                binding.tvLocationStatus.text = "Lokasi: Tidak ada"
+            }
+        }
 
         binding.btnSelectPhotoGallery.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -86,8 +104,11 @@ class AddStoryFragment : Fragment() {
                 val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), photoFile!!)
                 val photoPart = MultipartBody.Part.createFormData("photo", photoFile!!.name, requestFile)
 
+                val lat = userLatitude?.toString()?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
+                val lon = userLongitude?.toString()?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) }
+
                 if (token != null) {
-                    addStoryViewModel.addStory(token, requestBodyDescription, photoPart)
+                    addStoryViewModel.addStory(token, requestBodyDescription, photoPart, lat, lon)
                 }
             }
         }
@@ -97,6 +118,28 @@ class AddStoryFragment : Fragment() {
             if (message.contains("success", ignoreCase = true)) {
                 activity?.onBackPressed()
             }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                userLatitude = location.latitude
+                userLongitude = location.longitude
+                binding.tvLocationStatus.text = "Lokasi: $userLatitude, $userLongitude"
+            } else {
+                binding.tvLocationStatus.text = "Gagal mendapatkan lokasi."
+            }
+        }.addOnFailureListener {
+            binding.tvLocationStatus.text = "Gagal mendapatkan lokasi."
         }
     }
 
@@ -155,8 +198,8 @@ class AddStoryFragment : Fragment() {
 
     private fun checkAndRequestCameraPermission(): Boolean {
         val permissionsNeeded = mutableListOf<String>()
-        if (requireContext().checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(android.Manifest.permission.CAMERA)
+        if (requireContext().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.CAMERA)
         }
         if (permissionsNeeded.isNotEmpty()) {
             requestPermissions(permissionsNeeded.toTypedArray(), CAMERA_PERMISSION_REQUEST_CODE)
@@ -168,8 +211,8 @@ class AddStoryFragment : Fragment() {
     @SuppressLint("InlinedApi")
     private fun checkAndRequestGalleryPermission(): Boolean {
         val permissionsNeeded = mutableListOf<String>()
-        if (requireContext().checkSelfPermission(android.Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(android.Manifest.permission.READ_MEDIA_IMAGES)
+        if (requireContext().checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.READ_MEDIA_IMAGES)
         }
         if (permissionsNeeded.isNotEmpty()) {
             requestPermissions(permissionsNeeded.toTypedArray(), GALLERY_PERMISSION_REQUEST_CODE)
@@ -188,5 +231,6 @@ class AddStoryFragment : Fragment() {
         private const val CAMERA_REQUEST_CODE = 101
         private const val CAMERA_PERMISSION_REQUEST_CODE = 102
         private const val GALLERY_PERMISSION_REQUEST_CODE = 103
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 104
     }
 }

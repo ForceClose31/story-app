@@ -16,12 +16,24 @@ class AddStoryViewModel(application: Application) : AndroidViewModel(application
     val uploadResult = MutableLiveData<String>()
     val isLoading = MutableLiveData<Boolean>()
 
-    fun addStory(token: String, description: RequestBody, photo: MultipartBody.Part) {
+    fun addStory(
+        token: String,
+        description: RequestBody,
+        photo: MultipartBody.Part,
+        latitude: RequestBody? = null,
+        longitude: RequestBody? = null
+    ) {
         isLoading.value = true
         viewModelScope.launch {
             try {
                 val response: Response<AddStoryResponse> =
-                    RetrofitClient.instance.addStory("Bearer $token", description, photo)
+                    RetrofitClient.instance.addStory(
+                        "Bearer $token",
+                        description,
+                        photo,
+                        latitude,
+                        longitude
+                    )
 
                 if (response.isSuccessful) {
                     response.body()?.let {
