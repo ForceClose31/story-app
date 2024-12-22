@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.databinding.FragmentStoryDetailBinding
-import com.example.storyapp.data.model.Story
 
 class StoryDetailFragment : Fragment() {
 
@@ -25,7 +25,7 @@ class StoryDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val story = arguments?.getParcelable<Story>("story")
+        val story = arguments?.getParcelable<StoryEntity>("story")
 
         if (story == null) {
             showError("Data tidak tersedia.")
@@ -34,7 +34,7 @@ class StoryDetailFragment : Fragment() {
         }
     }
 
-    private fun loadStoryDetails(story: Story) {
+    private fun loadStoryDetails(story: StoryEntity) {
         showLoading()
 
         try {

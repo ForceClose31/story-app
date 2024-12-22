@@ -6,8 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,20 +13,34 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.R
 import com.example.storyapp.databinding.FragmentHomeBinding
-import com.example.storyapp.data.model.Story
 import com.example.storyapp.presentation.story.StoryAdapter
 import com.example.storyapp.presentation.story.StoryViewModel
 import com.example.storyapp.utils.DataStoreManager
+import com.example.storyapp.data.repository.StoryRepository
 import kotlinx.coroutines.launch
+import com.example.storyapp.data.local.entity.StoryEntity
+import com.example.storyapp.data.local.StoryDatabase
+import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
+import com.example.storyapp.data.api.RetrofitClient
+import com.example.storyapp.presentation.story.StoryViewModelFactory
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var storyViewModel: StoryViewModel
     private lateinit var dataStoreManager: DataStoreManager
+    private lateinit var storyAdapter: StoryAdapter
+    private var storyViewModel: StoryViewModel? = null
 
-    private var isLoading = false
+    private fun getStoryViewModel(token: String): StoryViewModel {
+        val database = StoryDatabase.getDatabase(requireContext())
+        val apiService = RetrofitClient.instance
+        val repository = StoryRepository(database, apiService,  "Bearer $token")
+        val factory = StoryViewModelFactory(requireActivity().application, repository)
+        return ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,12 +53,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyViewModel = ViewModelProvider(this)[StoryViewModel::class.java]
         dataStoreManager = DataStoreManager(requireContext())
+        storyAdapter = StoryAdapter { story -> onStoryClick(story) }
 
-        val adapter = StoryAdapter { story -> onStoryClick(story) }
         binding.rvStoryList.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvStoryList.adapter = adapter
+        binding.rvStoryList.adapter = storyAdapter
 
         binding.toolbar.findViewById<ImageButton>(R.id.btn_logout).setOnClickListener {
             logout()
@@ -65,38 +76,30 @@ class HomeFragment : Fragment() {
 
             if (!token.isNullOrEmpty()) {
                 showLoading()
-                storyViewModel.getStories("Bearer $token")
+                storyViewModel = getStoryViewModel(token)
+                storyViewModel!!.stories.collect { pagingData ->
+                    Log.d("PagingData", "PagingData size: ${pagingData.toString()}")
+                    storyAdapter.submitData(viewLifecycleOwner.lifecycle, pagingData)
+                    hideLoading()
+                }
             } else {
                 findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
             }
         }
 
-        storyViewModel.storiesLiveData.observe(viewLifecycleOwner) { stories ->
-            hideLoading()
-            if (!stories.isNullOrEmpty()) {
-                adapter.submitList(stories)
-            } else {
-                showErrorMessage("Data kosong atau tidak tersedia.")
-            }
-        }
-
-        storyViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+        storyViewModel?.errorMessage?.observe(viewLifecycleOwner) { message ->
             hideLoading()
             showErrorMessage(message)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    showExitDialog()
-                }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
             }
-        )
+        })
     }
 
     private fun showLoading() {
-        isLoading = true
         binding.progressBar.visibility = View.VISIBLE
         binding.rvStoryList.visibility = View.GONE
     }
@@ -132,7 +135,7 @@ class HomeFragment : Fragment() {
         dialog.show()
     }
 
-    private fun onStoryClick(story: Story) {
+    private fun onStoryClick(story: StoryEntity) {
         val bundle = Bundle().apply {
             putParcelable("story", story)
         }
