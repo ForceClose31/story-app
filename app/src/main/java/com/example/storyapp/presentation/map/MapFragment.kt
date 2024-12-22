@@ -1,5 +1,6 @@
 package com.example.storyapp.presentation.map
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.maps.model.MapStyleOptions
 import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -77,8 +79,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isMyLocationButtonEnabled = true
+
+        try {
+            val success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.mapstyle)
+            )
+            if (!success) {
+                Log.e("MapStyle", "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e("MapStyle", "Can't find style. Error: ", e)
+        }
     }
 
     private fun addMarkers(stories: List<Story>) {
